@@ -26,6 +26,14 @@ const GAD_7: Array<string> = [
    "Feeling afraid as if something awful mught happen" 
 ]
 
+const ASQ: Array<string> = [
+    "In the past few weeks, have you wished you were dead? ",
+    "In the past few weeks, have you felt that you or your family would be better off if you were dead?",
+    "In the past week, have you been having thoughts about killing yourself?",
+    "Have you ever tried to kill yourself?",
+    "Are you having thoughts of killing yourself right now?"
+]
+
 async function getAIResponse(questions: Array<string>): JsonObject
 {
     const prompt = `convert the following list of statements 
