@@ -33,6 +33,11 @@ export async function POST(event: RequestEvent): Promise<Response>
     }
 
     question_chosen = question_chosen_pack[question_index];
+    if(question_index >= question_chosen_pack.length)
+    {
+        ready_for_results = true;
+    }
+    
     question_index++;
 
     const question_to_ask = await formatQuestionAsResponse(question_chosen, data.user_text);
