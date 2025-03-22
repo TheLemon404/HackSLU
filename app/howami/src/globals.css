@@ -8,6 +8,9 @@
     --grey: #999999;
     --dark_grey: #666666;
     --light_grey: #cccccc;
+    --dark: #1e1e1e;
+    --lightish_dark: #3a3a3a;
+    --light_dark: #424242;
 
     --font: "Gidole", sans-serif;
     --font_weight: 500;
@@ -15,6 +18,13 @@
 }
 
 input
+{
+    font-family: var(--font);
+    font-weight: var(--font_weight);
+    font-style: var(--font_style);
+}
+
+li
 {
     font-family: var(--font);
     font-weight: var(--font_weight);
@@ -29,6 +39,13 @@ p
 }
 
 h1
+{
+    font-family: var(--font);
+    font-weight: 700;
+    font-style: var(--font_style);
+}
+
+h2
 {
     font-family: var(--font);
     font-weight: 700;
