@@ -1,24 +1,37 @@
 <script lang="ts">
     import "../globals.css"
     import type { PageData } from "./$types";
+    import { base } from "$app/paths"
+    import gsap from "gsap";
+    import { goto } from "$app/navigation";
 
     let { data }: { data: PageData } = $props();
 
     let responses: string[] = $state([]);
+    let initial_sentiment: boolean = true;
+    let question_index = 0;
+
 
     async function submit_text(e: KeyboardEvent)
     {
         if(e.key == "Enter")
         {
             const user_input_field = document.getElementById("user_text");
+            const scroll_panel = document.getElementById("response_container");
             let user_text: string = user_input_field.value;
 
             if(user_text != "")
             {
+                responses.push({
+                    id: -1,
+                    text: user_text
+                });
+
                 const form_data = {
+                    initial_sentiment: initial_sentiment,
                     user_text: user_text,
-                    depression: data.questions.depression.questions,
-                    anxiety: data.questions.anxiety.questions,
+                    chosen_questions: data.questions,
+                    question_index: question_index
                 }
 
                 const result = await fetch("/api/chat",
@@ -31,9 +44,30 @@
                         body: JSON.stringify(form_data)
                     }
                 ).then((res) => res.json());
+
+                question_index = result.chosen_question_index
+                data.questions = result.chosen_questions;
                 
                 user_input_field.value = "";
-                responses.push(result.question_to_ask);
+                responses.push({
+                    id: 1,
+                    text: result.question_to_ask
+                });
+
+                initial_sentiment = result.initial_sentiment;
+
+                if(result.ready_for_results)
+                {
+                    goto('/result');
+                }
+
+                console.log(result);
+
+                gsap.to(scroll_panel, {
+                    duration: 1,
+                    scrollTop: scroll_panel.scrollHeight,
+                    ease: "bezier"
+                });
             }
         }
     }
@@ -41,13 +75,21 @@
 
 <div style="overflow: hidden;">
     <div class="conversation_container">
-        <div class="response_container">
+        <div id="response_container" class="response_container">
         {#each responses as response}
             <ul class="response_list">
                 <li class="response">
-                    <h2 class="ai_header">AI</h2>
+                    {#if response.id}
+                    <h2 class="me_header"></h2>
                     <div class="line"></div>
-                    {response.text}
+                    <p style="color: var(--dark);">{response.text}</p>
+                    {:else}
+                    <h2 class="ai_header">
+                        <img src="{base}/logo.svg" style="color: var(--primary_color);">
+                    </h2>
+                    <div class="line"></div>
+                    <p class="ai_response">{response.text}</p>
+                    {/if}
                 </li>
             </ul>
         {/each}
@@ -73,14 +115,14 @@
         max-width: 500px;
         padding: 15px;
         font-size: 18px;
-        border: 2px solid var(--light_grey);
-        border-radius: 15px;
+        border: 1px solid var(--light_grey);
+        border-radius: 50px;
         transition: all 200ms;
     }
 
     input:focus {
         outline: none;
-        border: 2px solid var(--primary_color);
+        border: 1px solid var(--primary_color);
     }
 
     .response_list
@@ -123,7 +165,7 @@
 
     .lower_input
     {
-        top: calc(80% - 30px);
+        top: calc(90% - 30px);
     }
 
     .conversation_container {
@@ -136,7 +178,7 @@
 
     .line
     {
-        border: 1px solid var(--primary_color);
+        border: 1px solid var(--light_grey);
     }
 
     .background {
@@ -144,9 +186,12 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: var(--darkish_light);
+        width: calc(100vw - 30px);
+        height: calc(100vh - 30px);
+        background-color: var(--light);
+        border: none;
+        margin: 15px;
+        border-radius: 15px;
     }
 
     .response
@@ -160,19 +205,29 @@
         margin: 10px;
     }
 
+    .me_header
+    {
+        margin: 5px;
+        border-radius: 5px;
+        width: 50px;
+        color: var(--light_dark);
+    }
+
     .ai_header
     {
         margin: 5px;
-        margin-left: 20px;
         border-radius: 5px;
         width: 50px;
         color: var(--primary_color);
     }
 
-    @keyframes t{
-        from {background-size:0 200%}
+    .ai_response
+    {
+        animation: 2s appear;
     }
-    @keyframes b{
-        50% {background-position:0 -100%,0 0}
+
+    @keyframes appear {
+        from { color: transparent;}
+        to {color: var(--primary_color);}
     }
 </style>
