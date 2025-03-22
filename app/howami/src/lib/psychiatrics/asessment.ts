@@ -64,6 +64,7 @@ export async function getInitialSentiment(text: string): JsonObject
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const json_text = response.text().replace("```json", "").replace("```", "");
+    console.log(json_text)
     return JSON.parse(json_text);
 }
 
@@ -96,3 +97,5 @@ export async function formatQuestionAsResponse(question: string, user_text: stri
     const response = await result.response;
     return JSON.parse(response.text().replace("```json", "").replace("```", "")).response;
 }
+
+export async function scorePatient()
