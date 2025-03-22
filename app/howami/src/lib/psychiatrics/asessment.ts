@@ -35,6 +35,15 @@ const ASQ: Array<string> = [
     "Are you having thoughts of killing yourself right now?"
 ]
 
+const RMS: Array<string> = [
+    "Have there been at least 6 different periods of time (at least 2 weeks) when you felt deeply depressed?",
+    "Did you have problems with depression before the age of 18?",
+    "Have you ever had to stop or change your antidepressant because it made you highly irritable or hyper?",
+    "Have you ever had a period of at least 1 week during which you were more talkative than normal with thoughts racing in your head?",
+    "Have you ever had a period of at least 1 week during which you felt any of the following: unusually happy; unusually outgoing; or unusually energetic?",
+    "Have you ever had a period of at least 1 week during which you needed much less sleep than usual?"
+]
+
 async function getAIResponse(questions: Array<string>): JsonObject
 {
     const prompt = `convert the following list of statements 
