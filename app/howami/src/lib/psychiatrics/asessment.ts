@@ -73,7 +73,7 @@ export async function getInitialSentiment(text: string): JsonObject
         I need you to select ONE one of the following (normal, depressed, suicidal, anxiety, bipolar, stress, or personality disorder)
         as a categorization of the following text.
         Return this analysis in json format, here is an example: {
-            result: "normal"
+            "result": "normal"
         }
         Under no circumstances can you return anything other than this json response, including explanations.
         Here is the text data to analize: ${text}
@@ -82,7 +82,7 @@ export async function getInitialSentiment(text: string): JsonObject
     const response = await result.response;
     const json_text = response.text().replace("```json", "").replace("```", "");
     console.log(json_text)
-    return JSON.parse(json_text);
+    return JSON.parse(json_text)
 }
 
 export function getQuestionListBasedOnSentiment(sentiment: string): List<string>
@@ -102,17 +102,27 @@ export function getQuestionListBasedOnSentiment(sentiment: string): List<string>
 
 export async function formatQuestionAsResponse(question: string, user_text: string): JsonObject
 {
+    console.log(question);
+    
     const prompt = `
-    alter the following question slightly, to make it fit into a conversation with the previous text. 
+    Alter the following question slightly, to make it fit into a conversation with the previous text. 
     Make sure the question is still asked, semi-directly
     Here is the question to format: ${question} and here is the previous
     text: ${user_text}.
+    Return your answer in the following json response:
+    {
+        "response":"..."
+    }
     Under no circumstances can you return anything other than this json response, including explanations.
     `
 
+    console.log(prompt)
+
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return JSON.parse(response.text().replace("```json", "").replace("```", "")).response;
+    const json_text = response.text().replace("```json", "").replace("```", "")
+    console.log(json_text);
+    return JSON.parse(json_text).response;
 }
 
 export async function scorePatient()
