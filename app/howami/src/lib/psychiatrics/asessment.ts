@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { GOOGLE_GEMENI_API_KEY } from "$env/static/private";
+import type { JsonOptions } from "vite";
 
 const genAI = new GoogleGenerativeAI(GOOGLE_GEMENI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -26,6 +27,14 @@ const GAD_7: Array<string> = [
    "Feeling afraid as if something awful mught happen" 
 ]
 
+const ASQ: Array<string> = [
+    "In the past few weeks, have you wished you were dead? ",
+    "In the past few weeks, have you felt that you or your family would be better off if you were dead?",
+    "In the past week, have you been having thoughts about killing yourself?",
+    "Have you ever tried to kill yourself?",
+    "Are you having thoughts of killing yourself right now?"
+]
+
 async function getAIResponse(questions: Array<string>): JsonObject
 {
     const prompt = `convert the following list of statements 
@@ -47,3 +56,54 @@ export async function getAnxietyQuestions(): JsonObject
 {
     return await getAIResponse(GAD_7);
 }
+
+export async function getInitialSentiment(text: string): JsonObject
+{
+    const prompt = `
+        Read the following text data and determine the sentiment of the text.
+        I need you to select ONE one of the following (normal, depressed, suicidal, anxiety, bipolar, stress, or personality disorder)
+        as a categorization of the following text.
+        Return this analysis in json format, here is an example: {
+            result: "normal"
+        }
+        Under no circumstances can you return anything other than this json response, including explanations.
+        Here is the text data to analize: ${text}
+    `
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const json_text = response.text().replace("```json", "").replace("```", "");
+    console.log(json_text)
+    return JSON.parse(json_text);
+}
+
+export function getQuestionListBasedOnSentiment(sentiment: string): List<string>
+{
+    switch(sentiment)
+    {
+        case "normal":
+            return [];
+        case "depressed":
+            return PHQ_9;
+        case "anxiety":
+            return GAD_7;
+        default:
+            return ["do you love dogs?"] 
+    }
+}
+
+export async function formatQuestionAsResponse(question: string, user_text: string): JsonObject
+{
+    const prompt = `
+    alter the following question slightly, to make it fit into a conversation with the previous text. 
+    Make sure the question is still asked, semi-directly
+    Here is the question to format: ${question} and here is the previous
+    text: ${user_text}.
+    Under no circumstances can you return anything other than this json response, including explanations.
+    `
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return JSON.parse(response.text().replace("```json", "").replace("```", "")).response;
+}
+
+export async function scorePatient()

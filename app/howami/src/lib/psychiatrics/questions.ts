@@ -12,3 +12,4 @@ export async function getAllQuestions(): JsonObject
 
     return questions;
 }
+
