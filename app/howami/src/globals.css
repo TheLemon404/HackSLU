@@ -2,9 +2,37 @@
 {
     --primary_color: #6c53d2;
     --light: #f3f3f3;
-    --very_light: #fafafa;
+    --very_light: #ffffff;
     --darkish_light: #eaeaea;
     --dark_light: #e0e0e0;
+    --grey: #999999;
+    --dark_grey: #666666;
+    --light_grey: #cccccc;
+
+    --font: "Gidole", sans-serif;
+    --font_weight: 500;
+    --font_style: normal;
+}
+
+input
+{
+    font-family: var(--font);
+    font-weight: var(--font_weight);
+    font-style: var(--font_style);
+}
+
+p
+{
+    font-family: var(--font);
+    font-weight: var(--font_weight);
+    font-style: var(--font_style);
+}
+
+h1
+{
+    font-family: var(--font);
+    font-weight: 700;
+    font-style: var(--font_style);
 }
 
 .background
