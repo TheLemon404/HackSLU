@@ -12,14 +12,14 @@ export async function POST(event: RequestEvent): Promise<Response>
 
     if(data.initial_sentiment)
     {
-        sentiment = await getInitialSentiment(data.user_text);
+        sentiment = await getInHouseSentiment(data.user_text);
+        console.log(sentiment.result);
         question_chosen_pack = getQuestionListBasedOnSentiment(sentiment.result);
     }
 
     if(data.sentiment.result == "normal")
     {
-        sentiment = await rejudgeSentiment(data.user_text, data.last_question);
-        console.log(sentiment);
+        sentiment = await inHouseRejudgeSentiment(data.user_text, data.last_question);
         if(sentiment.result != "normal")
         {
             question_index = 0;

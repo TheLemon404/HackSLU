@@ -266,8 +266,6 @@ export async function getDoctorsNearMe(location: JsonObject, diagnosis: string):
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const json_text = response.text().replace("```json", "").replace("```", "");
-    console.log(json_text);
-    
+    const json_text = response.text().replace("```json", "").replace("```", "");    
     return JSON.parse(json_text);
 }

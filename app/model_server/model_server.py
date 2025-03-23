@@ -51,7 +51,7 @@ class MyHandler(BaseHTTPRequestHandler):
             case 1:
                 return "bipolar"
             case 2:
-                return "depression"
+                return "depressed"
             case 3:
                 return "normal"
             case 4:
@@ -68,24 +68,16 @@ class MyHandler(BaseHTTPRequestHandler):
 
         xgb_model = joblib.load('xgb_model.pkl')    
 
-        new_text = """
-            I am doing fine how are you?
-        """
-        stemmed_str, num_chars, num_sents = preprocess_new_text(new_text)
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        json_data = json.loads(post_data.decode('utf-8'))
+
+        stemmed_str, num_chars, num_sents = preprocess_new_text(json_data["user_text"])
         new_text_tfidf = vectorizer.transform([stemmed_str])  
         new_text_num = np.array([[num_chars, num_sents]])
         new_text_combined = hstack([new_text_tfidf, new_text_num]) 
 
         prediction = xgb_model.predict(new_text_combined)
-
-        print("Predicted class:", prediction[0])     
-
-        print("post ---")
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
-        json_data = json.loads(post_data.decode('utf-8'))
-
-        print(json_data["user_text"]);
 
         response_data = {"result": self.to_daignosis(prediction[0])}
         
