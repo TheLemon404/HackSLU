@@ -27,11 +27,25 @@
         width: 28px;
         height: 28px;
         filter: brightness(0) saturate(100%) invert(27%) sepia(95%) saturate(1834%) hue-rotate(215deg) brightness(97%) contrast(93%);
+        transition: all 200ms;
+    }
+
+    a
+    {
+        height: 36px;
+        border: 2px solid var(--light);
+        border-radius: 5px;
+        transition: all 200ms;
+    }
+
+    a:hover
+    {
+        border: 2px solid var(--discord);
     }
 
     h3
     {
         margin: 15px;
-        margin-top: 5px;
+        margin-top: 7px;
     }
 </style>

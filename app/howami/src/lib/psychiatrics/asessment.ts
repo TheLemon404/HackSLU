@@ -219,6 +219,7 @@ export async function getDoctorsNearMe(location: JsonObject, diagnosis: string):
             }
         ]
     }
+    Under no circumstances can you return anything other than this json response, including explanations.
     Here is the location: {longitude: ${location.longitude}, latitude: ${location.latitude}}
     Here is the diagnosis: ${diagnosis}
     `

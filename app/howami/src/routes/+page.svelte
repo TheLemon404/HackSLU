@@ -245,12 +245,13 @@
     }
     input {
         font-size: 18px;
+        font-weight: 550;
         position: fixed;
         left: 50%;
         width: 90%;
         max-width: 600px;
         padding: 15px;
-        border: 1px solid var(--light_grey);
+        border: 2px solid var(--light_grey);
         border-radius: 35px;
         background: var(--very_light);
         color: var(--discord);

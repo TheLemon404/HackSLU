@@ -193,7 +193,7 @@
         padding: 0.75rem;
         background: var(--light);
         border-radius: 6px;
-        border-left: 3px solid var(--primary_color);
+        border-left: 3px solid var(--discord);
     }
 
     .label {
@@ -257,6 +257,8 @@
 
     .recommendation
     {
+        border-radius: 10px;
+        background-color: var(--light);
         display: flex;
         flex-wrap: wrap;
         padding: 5px;
@@ -269,13 +271,18 @@
         font-style: var(--font_style);
         color: var(--discord);
         text-decoration: none;
-        border: 2px solid var(--light);
-        background-color: var(--light);
-        padding: 5px;
+        background-color: var(--very_light);
+        padding: 5px 10px;
         margin: 5px;
         border-radius: 25px;
+        transition: all 200ms;
     }
 
+    .link:hover
+    {
+        color: var(--light);
+        background-color: var(--discord);
+    }
         
     .lds-ripple,
     .lds-ripple div {
