@@ -117,13 +117,13 @@ export function getQuestionListBasedOnSentiment(sentiment: string): List<string>
     switch(sentiment)
     {
         case "normal":
-            return [];
+            return Q;
         case "depressed":
             return PHQ_9;
         case "anxiety":
             return GAD_7;
         default:
-            return ["do you love dogs?"] 
+            return ["You seem fine in all honesty, is there anything else you want to talk about?"] 
     }
 }
 
@@ -150,6 +150,26 @@ export async function formatQuestionAsResponse(question: string, user_text: stri
     const json_text = response.text().replace("```json", "").replace("```", "")
     console.log(json_text);
     return JSON.parse(json_text).response;
+}
+
+export async function rejudgeSentiment(text: string, question: string): JsonObject
+{
+    const prompt = `
+    Read the following text data and determine the sentiment of the text, given the previous question.
+        I need you to select ONE one of the following (normal, depressed, suicidal, anxiety, bipolar, stress, or personality disorder)
+        as a categorization of the following text.
+        Return this analysis in json format, here is an example: {
+            "result": "normal"
+        }
+        Under no circumstances can you return anything other than this json response, including explanations.
+        Here is the text data to analize: ${text},
+        Here is the previous question: ${question}
+        `
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const json_text = response.text().replace("```json", "").replace("```", "");
+        return JSON.parse(json_text);
 }
 
 export async function scorePatient()
