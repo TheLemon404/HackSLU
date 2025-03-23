@@ -64,7 +64,7 @@ fs.createReadStream('data.csv')
   .pipe(csv())
   .on('data', (row) => {
     // Assuming the text column is named 'text'
-    documents.push(row.text);
+    documents.push(row.statement);
   })
   .on('end', () => {
     const vectorizer = new TfidfVectorizer();
