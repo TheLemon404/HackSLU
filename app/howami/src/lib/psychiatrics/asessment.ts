@@ -35,11 +35,20 @@ const ASQ: Array<string> = [
     "Are you having thoughts of killing yourself right now?"
 ]
 
+const RMS: Array<string> = [
+    "Have there been at least 6 different periods of time (at least 2 weeks) when you felt deeply depressed?",
+    "Did you have problems with depression before the age of 18?",
+    "Have you ever had to stop or change your antidepressant because it made you highly irritable or hyper?",
+    "Have you ever had a period of at least 1 week during which you were more talkative than normal with thoughts racing in your head?",
+    "Have you ever had a period of at least 1 week during which you felt any of the following: unusually happy; unusually outgoing; or unusually energetic?",
+    "Have you ever had a period of at least 1 week during which you needed much less sleep than usual?"
+]
+
 async function getAIResponse(questions: Array<string>): JsonObject
 {
     const prompt = `convert the following list of statements 
     into a list of questions that can be asked 
-    to a person to assess their depression level, in a mannar that feels conversational, 
+    to a person to assess their depression level, in a manner that feels conversational, 
     and format your response into json that can be parsed using JSON.parse(response): ${questions}`;
 
     const result = await model.generateContent(prompt);
@@ -64,7 +73,7 @@ export async function getInitialSentiment(text: string): JsonObject
         I need you to select ONE one of the following (normal, depressed, suicidal, anxiety, bipolar, stress, or personality disorder)
         as a categorization of the following text.
         Return this analysis in json format, here is an example: {
-            result: "normal"
+            "result": "normal"
         }
         Under no circumstances can you return anything other than this json response, including explanations.
         Here is the text data to analize: ${text}
@@ -73,7 +82,7 @@ export async function getInitialSentiment(text: string): JsonObject
     const response = await result.response;
     const json_text = response.text().replace("```json", "").replace("```", "");
     console.log(json_text)
-    return JSON.parse(json_text);
+    return JSON.parse(json_text)
 }
 
 export function getQuestionListBasedOnSentiment(sentiment: string): List<string>
@@ -93,17 +102,27 @@ export function getQuestionListBasedOnSentiment(sentiment: string): List<string>
 
 export async function formatQuestionAsResponse(question: string, user_text: string): JsonObject
 {
+    console.log(question);
+    
     const prompt = `
-    alter the following question slightly, to make it fit into a conversation with the previous text. 
+    Alter the following question slightly, to make it fit into a conversation with the previous text. 
     Make sure the question is still asked, semi-directly
     Here is the question to format: ${question} and here is the previous
     text: ${user_text}.
+    Return your answer in the following json response:
+    {
+        "response":"..."
+    }
     Under no circumstances can you return anything other than this json response, including explanations.
     `
 
+    console.log(prompt)
+
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return JSON.parse(response.text().replace("```json", "").replace("```", "")).response;
+    const json_text = response.text().replace("```json", "").replace("```", "")
+    console.log(json_text);
+    return JSON.parse(json_text).response;
 }
 
 export async function scorePatient()
