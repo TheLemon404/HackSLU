@@ -130,12 +130,15 @@
             </ul>
         {/each}
         </div>
+        {#if responses.length == 0}
+            <h1>How are you feeling today?</h1>
+        {/if}
         <input 
         autocomplete="off" 
         id="user_text" 
         class={responses.length ? 'lower_input' : 'center_input'} 
         onkeypress={submit_text} 
-        placeholder="how are you feeling, is there anything on your mind?"
+        placeholder="is there anything on your mind?"
     >
     </div>
 
@@ -146,6 +149,16 @@
 </div>
 
 <style>
+    h1
+    {
+        font-size: 40px;
+        position: absolute;
+        left: 50vw;
+        top: 30vh;
+        transform: translate(-50%, -50%);
+        color: var(--discord);
+    }
+
     .ai_header {
         display: flex;
         align-items: center;
