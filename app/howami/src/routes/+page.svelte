@@ -4,7 +4,7 @@
     import { base } from "$app/paths"
     import gsap from "gsap";
     import { goto } from "$app/navigation";
-    import { setContext } from "svelte";
+    import Watermark from "$lib/watermark.svelte";
 
     let { data }: { data: PageData } = $props();
 
@@ -114,9 +114,11 @@
             <ul class="response_list">
                 <li class="response">
                     {#if response.id == -1}
-                    <h2 class="me_header"></h2>
+                    <h2 class="me_header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="6" r="4" fill="var(--discord)"/><path fill="var(--discord)" d="M20 17.5c0 2.485 0 4.5-8 4.5s-8-2.015-8-4.5S7.582 13 12 13s8 2.015 8 4.5"/></svg>
+                    </h2>
                     <div class="line"></div>
-                    <p style="color: var(--dark);">{response.text}</p>
+                    <p style="color: var(--light);">{response.text}</p>
                     {:else}
                     <h2 class="ai_header">
                         <img src="{base}/logo_primary.svg" style="fill: var(--primary_color); width: 35px; height: 35px;">
@@ -139,6 +141,8 @@
 
     <div class="background">
     </div>
+
+    <Watermark />
 </div>
 
 <style>
@@ -164,12 +168,6 @@
         width: 40px;
         height: 40px;
         border-radius: 8px;
-    }
-
-    .me_header svg {
-        width: 24px;
-        height: 24px;
-        color: var(--dark);
     }
 
     .conversation_container {
@@ -210,6 +208,7 @@
         border: 1px solid var(--light_grey);
         max-width: 80%;
         animation: appear 2s;
+        color: var(--discord)
     }
 
     .response:has(.me_header) p {
@@ -222,11 +221,18 @@
 
     input:focus {
         outline: none;
-        border-color: var(--primary_color);
+        border-color: var(--discord);
     }
 
     .background {
+        z-index: -1;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: calc(100vw - 30px);
+        height: calc(100vh - 30px);
         background: var(--light);
+        border-radius: 15px;
     }
 
     .response_container::-webkit-scrollbar {
@@ -238,15 +244,16 @@
         background: var(--light_grey);
     }
     input {
+        font-size: 18px;
         position: fixed;
         left: 50%;
         width: 90%;
         max-width: 600px;
-        padding: 12px 20px;
+        padding: 15px;
         border: 1px solid var(--light_grey);
-        border-radius: 24px;
+        border-radius: 35px;
         background: var(--very_light);
-        color: var(--dark);
+        color: var(--discord);
         transition: all 0.3s ease;
         top: 50%;
         transform: translate(-50%, -50%);
@@ -261,5 +268,16 @@
         top: auto;
         bottom: 20px;
         transform: translateX(-50%);
+    }
+
+    @keyframes appear {
+        0% {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 </style>

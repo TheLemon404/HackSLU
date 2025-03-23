@@ -46,8 +46,6 @@
 </script>
 
 <div class="container">
-    <h2>Mental Health Assessment Results</h2>
-    
     <div class="section">
         <h3>Overview</h3>
         <div class="stats">
@@ -102,14 +100,16 @@
     </div>
 
     <div class="section">
-        <h3>Recommendations</h3>
+        <h3>Nearby Fascilities</h3>
         <div class="recommendation">
             {#each resources.hospitals as hospital}
-            <a class="link" href={hospital.website}>{hospital.name}</a>
-            <p>{hospital.speciality}</p>
+                <a class="link" href={hospital.website}>{hospital.name}</a>
+                <p>{hospital.speciality}</p>
             {/each}
         </div>
     </div>
+
+    <div class="background"></div>
 </div>
 
 <style>
@@ -117,12 +117,23 @@
         font-family: var(--font);
         font-weight: var(--font_weight);
         font-style: var(--font_style);
-        max-width: 600px;
+        width: 90vw;
         margin: 2rem auto;
         padding: 1.5rem;
-        background: var(--very_light);
+        background: var(--light);
         border-radius: 12px;
-        box-shadow: 0 2px 8px var(--dark_light);
+        display: flex;
+    }
+
+    .background {
+        z-index: -1;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: calc(100vw - 30px);
+        height: calc(100vh - 30px);
+        background: var(--light);
+        border-radius: 15px;
     }
 
     h2 {
@@ -142,8 +153,11 @@
         font-style: var(--font_style);
         margin: 1.5rem 0;
         padding: 1rem;
-        background: var(--light);
+        background: var(--very_light);
         border-radius: 8px;
+        width: 30vw;
+        margin: 10px;
+        margin-top: 5vh;
     }
 
     h3 {
@@ -171,7 +185,7 @@
         flex: 1;
         min-width: 160px;
         padding: 0.75rem;
-        background: var(--very_light);
+        background: var(--light);
         border-radius: 6px;
         border-left: 3px solid var(--primary_color);
     }
@@ -244,11 +258,67 @@
 
     .link
     {
+        font: var(--font);
+        font-weight: 500;
+        font-style: var(--font_style);
+        color: var(--discord);
         text-decoration: none;
-        border: 2px solid var(--darkish_light);
-        background-color: white;
+        border: 2px solid var(--light);
+        background-color: var(--light);
         padding: 5px;
         margin: 5px;
         border-radius: 25px;
+    }
+
+        
+    .lds-ripple,
+    .lds-ripple div {
+        box-sizing: border-box;
+    }
+    .lds-ripple {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+    .lds-ripple div {
+        position: absolute;
+        border: 4px solid currentColor;
+        opacity: 1;
+        border-radius: 50%;
+        animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+    .lds-ripple div:nth-child(2) {
+        animation-delay: -0.5s;
+    }
+    @keyframes lds-ripple {
+        0% {
+            top: 36px;
+            left: 36px;
+            width: 8px;
+            height: 8px;
+            opacity: 0;
+        }
+        4.9% {
+            top: 36px;
+            left: 36px;
+            width: 8px;
+            height: 8px;
+            opacity: 0;
+        }
+        5% {
+            top: 36px;
+            left: 36px;
+            width: 8px;
+            height: 8px;
+            opacity: 1;
+        }
+        100% {
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 80px;
+            opacity: 0;
+        }
     }
 </style>

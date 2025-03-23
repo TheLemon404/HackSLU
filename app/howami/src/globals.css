@@ -55,6 +55,13 @@ h2
     font-style: var(--font_style);
 }
 
+h3
+{
+    font-family: var(--font);
+    font-weight: 700;
+    font-style: var(--font_style);
+}
+
 .background
 {
     background-color: ;
