@@ -174,7 +174,7 @@
     .conversation_container {
         display: flex;
         flex-direction: column;
-        height: 100vh;
+        height: 80vh;
         padding: 20px;
     }
 
@@ -208,6 +208,7 @@
         color: var(--dark);
         border: 1px solid var(--light_grey);
         max-width: 80%;
+        animation: appear 2s;
     }
 
     .response:has(.me_header) p {
@@ -245,6 +246,16 @@
     }
 
     .response_container::-webkit-scrollbar-thumb {
+        border-radius: 15px;
         background: var(--light_grey);
+    }
+
+    @keyframes appear {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
     }
 </style>
