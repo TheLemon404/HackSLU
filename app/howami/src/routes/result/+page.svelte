@@ -1,6 +1,7 @@
 <script lang='ts'>
     import { getContext, onMount } from "svelte";
     import "../../globals.css"  
+    import Watermark from "$lib/watermark.svelte";
 
     let latitude;
     let longitude = null;
@@ -39,14 +40,13 @@
                     )
                 }
             ).then((res) => res.json());
+            console.log(resources);
             });
         }  
     })
 </script>
 
 <div class="container">
-    <h2>Mental Health Assessment Results</h2>
-    
     <div class="section">
         <h3>Overview</h3>
         <div class="stats">
@@ -54,6 +54,7 @@
                 <span class="label">Possible Diagnosis</span>
                 <span class="value">{capitalize(score.diagnosis)}</span>
                 <span class="value_minor">Explanation: {score.explanation}</span>
+                <span class="value">Need for medical attention: {score.need_for_help}%</span>
             </div>
         </div>
     </div>
@@ -101,27 +102,53 @@
     </div>
 
     <div class="section">
-        <h3>Recommendations</h3>
+        <h3>Nearby Resources</h3>
         <div class="recommendation">
+            {#if resources.hospitals == undefined}
+                <div class="lds-ripple"><div></div></div>
+            {/if}
             {#each resources.hospitals as hospital}
-            <a href={hospital.website}>{hospital.name}</a>
-            <p>{hospital.speciality}</p>
+                <a class="link" href={hospital.website}>{hospital.name}</a>
+            {/each}
+            {#each resources.resources as resource}
+                <a class="link" href={resource.link}>{resource.title}</a>
             {/each}
         </div>
     </div>
+
+    <div class="background"></div>
+
+    <Watermark />
 </div>
 
 <style>
+    :root
+    {
+        overflow: hidden;
+    }
+    
     .container {
         font-family: var(--font);
         font-weight: var(--font_weight);
         font-style: var(--font_style);
-        max-width: 600px;
+        width: 90vw;
         margin: 2rem auto;
         padding: 1.5rem;
-        background: var(--very_light);
+        background: var(--light);
         border-radius: 12px;
-        box-shadow: 0 2px 8px var(--dark_light);
+        display: flex;
+        overflow: hidden;
+    }
+
+    .background {
+        z-index: -1;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: calc(100vw - 30px);
+        height: calc(100vh - 30px);
+        background: var(--light);
+        border-radius: 15px;
     }
 
     h2 {
@@ -141,8 +168,11 @@
         font-style: var(--font_style);
         margin: 1.5rem 0;
         padding: 1rem;
-        background: var(--light);
+        background: var(--very_light);
         border-radius: 8px;
+        width: 30vw;
+        margin: 10px;
+        margin-top: 5vh;
     }
 
     h3 {
@@ -170,9 +200,9 @@
         flex: 1;
         min-width: 160px;
         padding: 0.75rem;
-        background: var(--very_light);
+        background: var(--light);
         border-radius: 6px;
-        border-left: 3px solid var(--primary_color);
+        border-left: 3px solid var(--discord);
     }
 
     .label {
@@ -232,6 +262,88 @@
         font-style: var(--font_style);
         color: var(--dark_grey);
         margin: 0;
-        padding: 0.5rem;
+    }
+
+    .recommendation
+    {
+        border-radius: 10px;
+        background-color: var(--light);
+        display: flex;
+        flex-wrap: wrap;
+        padding: 5px;
+    }
+
+    .link
+    {
+        font: var(--font);
+        font-weight: 500;
+        font-style: var(--font_style);
+        color: var(--discord);
+        text-decoration: none;
+        background-color: var(--very_light);
+        border-left: 3px solid var(--discord);
+        padding: 5px 10px;
+        margin: 5px;
+        border-radius: 5px;
+        transition: all 200ms;
+    }
+
+    .link:hover
+    {
+        color: var(--light);
+        background-color: var(--discord);
+    }
+        
+    .lds-ripple,
+    .lds-ripple div {
+        box-sizing: border-box;
+    }
+    .lds-ripple {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: auto;
+        margin-top: 70px;
+    }
+    .lds-ripple div {
+        position: absolute;
+        border: 4px solid var(--discord);
+        opacity: 1;
+        border-radius: 50%;
+        animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+    .lds-ripple div:nth-child(2) {
+        animation-delay: -0.5s;
+    }
+    @keyframes lds-ripple {
+        0% {
+            top: 36px;
+            left: 36px;
+            width: 8px;
+            height: 8px;
+            opacity: 0;
+        }
+        4.9% {
+            top: 36px;
+            left: 36px;
+            width: 8px;
+            height: 8px;
+            opacity: 0;
+        }
+        5% {
+            top: 36px;
+            left: 36px;
+            width: 8px;
+            height: 8px;
+            opacity: 1;
+        }
+        100% {
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 80px;
+            opacity: 0;
+        }
     }
 </style>

@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { GOOGLE_GEMENI_API_KEY } from "$env/static/private";
+import { MODEL_SERVER_URL } from "$env/static/private";
 
 const genAI = new GoogleGenerativeAI(GOOGLE_GEMENI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -32,8 +33,6 @@ const GAD_7: Array<string> = [
    "Feeling afraid as if something awful mught happen" 
 ]
 
-
-
 // Suicidal
 const ASQ: Array<string> = [
     "In the past few weeks, have you wished you were dead? ",
@@ -42,8 +41,6 @@ const ASQ: Array<string> = [
     "Have you ever tried to kill yourself?",
     "Are you having thoughts of killing yourself right now?"
 ]
-
-
 
 // Bipolar
 const RMS: Array<string> = [
@@ -55,10 +52,9 @@ const RMS: Array<string> = [
     "Have you ever had a period of at least 1 week during which you needed much less sleep than usual?"
 ]
 
-
-
 //Personality Disorder
-const McLean: Array<string> = ["Have any of your closest relationships been troubled by a lot of arguments or repeated breakups?",
+const McLean: Array<string> = [
+    "Have any of your closest relationships been troubled by a lot of arguments or repeated breakups?",
     "Have you deliberately hurt yourself physically (e.g., punched yourself, cut yourself, burned yourself)? How about made a suicide attempt?",
     "Have you had at least two other problems with impulsivity (e.g., eating binges and spending sprees, drinking too much and verbal outbursts)?",
     "Have you been extremely moody?",
@@ -68,7 +64,6 @@ const McLean: Array<string> = ["Have any of your closest relationships been trou
     "Have you chronically felt empty?",
     "Have you often felt that you had no idea of who you are or that you have no identity?",
     "Have you made desperate efforts to avoid feeling abandoned or being abandoned (e.g., repeatedly called someone to reassure yourself that he or she still cared, begged them not to leave you, clung to them physically)?"
-    
 ]
 
 async function getAIResponse(questions: Array<string>): JsonObject
@@ -93,21 +88,41 @@ export async function getAnxietyQuestions(): JsonObject
     return await getAIResponse(GAD_7);
 }
 
+export async function getInHouseSentiment(text: string): JsonObject
+{
+    const res = await fetch(MODEL_SERVER_URL, 
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "accept":"application/json"
+        },
+        body: JSON.stringify({
+            "user_text":text
+        })
+    }).then((res) => res.json());
+
+	return res;
+}
+
 export async function getInitialSentiment(text: string): JsonObject
 {
     const prompt = `
         Read the following text data and determine the sentiment of the text.
-        I need you to select ONE one of the following (normal, depressed, suicidal, anxiety, bipolar, stress, or personality disorder)
+        I need you to select ONE one of the following category types (normal, depressed, suicidal, anxiety, bipolar, stress, or personality_disorder)
         as a categorization of the following text.
         Return this analysis in json format, here is an example: {
-            "result": "normal"
+            "result": "..."
         }
         Under no circumstances can you return anything other than this json response, including explanations.
         Here is the text data to analize: ${text}
     `
+
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const json_text = response.text().replace("```json", "").replace("```", "");
+
+    console.log(json_text);
     return JSON.parse(json_text)
 }
 
@@ -121,15 +136,21 @@ export function getQuestionListBasedOnSentiment(sentiment: string): List<string>
             return PHQ_9;
         case "anxiety":
             return GAD_7;
+        case "suicidal":
+            return ASQ;
+        case "bipolar":
+            return RMS;
+        case "stress":
+            return GAD_7;
+        case "personality_disorder":
+            return McLean;
         default:
             return ["You seem fine in all honesty, is there anything else you want to talk about?"] 
     }
 }
 
 export async function formatQuestionAsResponse(question: string, user_text: string): JsonObject
-{
-    console.log(question);
-    
+{    
     const prompt = `
     Alter the following question slightly, to make it fit into a conversation with the previous text. 
     Make sure the question is still asked, semi-directly
@@ -148,11 +169,28 @@ export async function formatQuestionAsResponse(question: string, user_text: stri
     return JSON.parse(json_text).response;
 }
 
+export async function inHouseRejudgeSentiment(text: string, question: string): JsonObject
+{
+    const res = await fetch(MODEL_SERVER_URL, 
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "accept":"application/json"
+        },
+        body: JSON.stringify({
+            "user_text":text
+        })
+    }).then((res) => res.json());
+
+    return res;
+}
+
 export async function rejudgeSentiment(text: string, question: string): JsonObject
 {
     const prompt = `
     Read the following text data and determine the sentiment of the text, given the previous question.
-    I need you to select ONE one of the following (normal, depressed, suicidal, anxiety, bipolar, stress, or personality disorder)
+    I need you to select ONE one of the following (normal, depressed, suicidal, anxiety, bipolar, stress, or personality_disorder)
     as a categorization of the following text.
     Return this analysis in json format, here is an example: {
         "result": "normal"
@@ -175,7 +213,7 @@ export async function scorePatient(q_and_a: JsonObject): JsonObject
     Read these questions and answers, and rate the patients 
     depression, suicidal, anxiety, bipolar, stress, and personality disorder levels.
     Also add an antry for a possible diagnosis, that is either depression, suicidal, anxiety, bipolar, stress, or personality disorder.
-    Also add a short explanation for each diagnosis.
+    Also add a short explanation for each diagnosis. Also rank the immediate medical help from 0 to 100, given this context.
     Rate them in a percentage, from 0 - 100, and return your answer in the following json format:
     {
         "depression": 0,
@@ -185,7 +223,8 @@ export async function scorePatient(q_and_a: JsonObject): JsonObject
         "stress": 0,
         "personality_disorder": 0,
         "diagnosis": "",
-        "explanation": ""
+        "explanation": "",
+        "need_for_help: 0
     }
     Under no circumstances can you return anything other than this json response, including explanations.
     Here is the list of questions and answers: ${JSON.stringify(q_and_a)}
@@ -202,6 +241,7 @@ export async function getDoctorsNearMe(location: JsonObject, diagnosis: string):
     const prompt = `
     You are going to be provided a location, in latitude and longitude, and a psychiatric diagnosis.
     Return a list of hospitals somewhat near the location that are specialized in the diagnosis.
+    Also provide a list of other mental health links, and resources;
     Return your answer in the following json format:
     {
         "hospitals": [
@@ -212,16 +252,21 @@ export async function getDoctorsNearMe(location: JsonObject, diagnosis: string):
                 "phone_number": "",
                 "website": ""
             }
+        ],
+        "resources": [
+            {
+                "title":"",
+                "link":""
+            }
         ]
     }
+    Under no circumstances can you return anything other than this json response, including explanations.
     Here is the location: {longitude: ${location.longitude}, latitude: ${location.latitude}}
     Here is the diagnosis: ${diagnosis}
     `
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const json_text = response.text().replace("```json", "").replace("```", "");
-    console.log(json_text);
-    
+    const json_text = response.text().replace("```json", "").replace("```", "");    
     return JSON.parse(json_text);
 }
