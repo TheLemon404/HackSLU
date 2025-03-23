@@ -27,11 +27,14 @@ const GAD_7: Array<string> = [
    "Not being able to stop or control worrying",
    "Worrying too much about different things",
    "Trouble relaxing",
-   "Being so restless that it is hard to sti still",
+   "Being so restless that it is hard to sit still",
    "Becoming easily annoyed or irritable",
    "Feeling afraid as if something awful mught happen" 
 ]
 
+
+
+// Suicidal
 const ASQ: Array<string> = [
     "In the past few weeks, have you wished you were dead? ",
     "In the past few weeks, have you felt that you or your family would be better off if you were dead?",
@@ -40,6 +43,9 @@ const ASQ: Array<string> = [
     "Are you having thoughts of killing yourself right now?"
 ]
 
+
+
+// Bipolar
 const RMS: Array<string> = [
     "Have there been at least 6 different periods of time (at least 2 weeks) when you felt deeply depressed?",
     "Did you have problems with depression before the age of 18?",
@@ -47,6 +53,22 @@ const RMS: Array<string> = [
     "Have you ever had a period of at least 1 week during which you were more talkative than normal with thoughts racing in your head?",
     "Have you ever had a period of at least 1 week during which you felt any of the following: unusually happy; unusually outgoing; or unusually energetic?",
     "Have you ever had a period of at least 1 week during which you needed much less sleep than usual?"
+]
+
+
+
+//Personality Disorder
+const McLean: Array<string> = ["Have any of your closest relationships been troubled by a lot of arguments or repeated breakups?",
+    "Have you deliberately hurt yourself physically (e.g., punched yourself, cut yourself, burned yourself)? How about made a suicide attempt?",
+    "Have you had at least two other problems with impulsivity (e.g., eating binges and spending sprees, drinking too much and verbal outbursts)?",
+    "Have you been extremely moody?",
+    "Have you felt very angry a lot of the time? How about often acted in an angry or sarcastic manner?​",
+    "Have you often been distrustful of other people?",
+    "Have you frequently felt unreal or as if things around you were unreal?",
+    "Have you chronically felt empty?",
+    "Have you often felt that you had no idea of who you are or that you have no identity?",
+    "Have you made desperate efforts to avoid feeling abandoned or being abandoned (e.g., repeatedly called someone to reassure yourself that he or she still cared, begged them not to leave you, clung to them physically)?"
+    
 ]
 
 async function getAIResponse(questions: Array<string>): JsonObject
@@ -90,7 +112,7 @@ export async function getInitialSentiment(text: string): JsonObject
     return JSON.parse(json_text)
 }
 
-export function getQuestionListBasedOnSentiment(sentiment: string): Array<string>
+export function getQuestionListBasedOnSentiment(sentiment: string): List<string>
 {
     switch(sentiment)
     {
@@ -100,25 +122,14 @@ export function getQuestionListBasedOnSentiment(sentiment: string): Array<string
             return PHQ_9;
         case "anxiety":
             return GAD_7;
-        case "suicidal":
-            return ASQ;
-        case "bipolar":
-            return RMS;
-        case "stress":
-            return GAD_7;
-        case "personality disorder":
-            return RMS;
         default:
-            return ["You seem fine in all honesty, is there anything else you want to talk about?"] 
+            return ["do you love dogs?"] 
     }
 }
 
 export async function formatQuestionAsResponse(question: string, user_text: string): JsonObject
 {
-    if(question == undefined)
-    {
-        return undefined;
-    }
+    console.log(question);
     
     const prompt = `
     Alter the following question slightly, to make it fit into a conversation with the previous text. 
@@ -141,31 +152,4 @@ export async function formatQuestionAsResponse(question: string, user_text: stri
     return JSON.parse(json_text).response;
 }
 
-export async function scorePatient(q_and_a: JsonObject): JsonObject
-{
-    const prompt = `
-    You are going to be provided a list of questions and answers in json format.
-    Read these questions and answers, and rate the patients 
-    depression, suicidal, anxiety, bipolar, stress, and personality disorder levels.
-    Also add an antry for a possible diagnosis, that is either depression, suicidal, anxiety, bipolar, stress, or personality disorder.
-    Also add a short explanation for each diagnosis.
-    Rate them in a percentage, from 0 - 100, and return your answer in the following json format:
-    {
-        "depression": 0,
-        "suicidal": 0,
-        "anxiety": 0,
-        "bipolar": 0,
-        "stress": 0,
-        "personality_disorder": 0,
-        "diagnosis": "",
-        "explanation": ""
-    }
-    Under no circumstances can you return anything other than this json response, including explanations.
-    Here is the list of questions and answers: ${JSON.stringify(q_and_a)}
-    `
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const json_text = response.text().replace("```json", "").replace("```", "");
-    return JSON.parse(json_text);
-}
+export async function scorePatient()
