@@ -60,7 +60,7 @@ class TfidfVectorizer {
 // Read CSV file and vectorize
 const documents = [];
 
-fs.createReadStream('data.csv')
+fs.createReadStream('./data.csv')
   .pipe(csv())
   .on('data', (row) => {
     // Assuming the text column is named 'text'

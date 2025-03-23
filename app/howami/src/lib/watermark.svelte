@@ -4,7 +4,9 @@
 </script>;
 
 <div class="watermark">
-    <img src="{base}/logo_primary.svg" style="fill: var(--primary_color); width: 35px; height: 35px;">
+    <a href="/">
+        <img src="{base}/logo_primary.svg" style="fill: var(--primary_color); width: 35px; height: 35px;">
+    </a>
     <h3 style="color: var(--discord);">howami.ai</h3>
 </div>
 

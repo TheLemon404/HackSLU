@@ -32,8 +32,6 @@ const GAD_7: Array<string> = [
    "Feeling afraid as if something awful mught happen" 
 ]
 
-
-
 // Suicidal
 const ASQ: Array<string> = [
     "In the past few weeks, have you wished you were dead? ",
@@ -42,8 +40,6 @@ const ASQ: Array<string> = [
     "Have you ever tried to kill yourself?",
     "Are you having thoughts of killing yourself right now?"
 ]
-
-
 
 // Bipolar
 const RMS: Array<string> = [
@@ -55,10 +51,9 @@ const RMS: Array<string> = [
     "Have you ever had a period of at least 1 week during which you needed much less sleep than usual?"
 ]
 
-
-
 //Personality Disorder
-const McLean: Array<string> = ["Have any of your closest relationships been troubled by a lot of arguments or repeated breakups?",
+const McLean: Array<string> = [
+    "Have any of your closest relationships been troubled by a lot of arguments or repeated breakups?",
     "Have you deliberately hurt yourself physically (e.g., punched yourself, cut yourself, burned yourself)? How about made a suicide attempt?",
     "Have you had at least two other problems with impulsivity (e.g., eating binges and spending sprees, drinking too much and verbal outbursts)?",
     "Have you been extremely moody?",
@@ -68,7 +63,6 @@ const McLean: Array<string> = ["Have any of your closest relationships been trou
     "Have you chronically felt empty?",
     "Have you often felt that you had no idea of who you are or that you have no identity?",
     "Have you made desperate efforts to avoid feeling abandoned or being abandoned (e.g., repeatedly called someone to reassure yourself that he or she still cared, begged them not to leave you, clung to them physically)?"
-    
 ]
 
 async function getAIResponse(questions: Array<string>): JsonObject
@@ -97,17 +91,20 @@ export async function getInitialSentiment(text: string): JsonObject
 {
     const prompt = `
         Read the following text data and determine the sentiment of the text.
-        I need you to select ONE one of the following (normal, depressed, suicidal, anxiety, bipolar, stress, or personality disorder)
+        I need you to select ONE one of the following category types (normal, depressed, suicidal, anxiety, bipolar, stress, or personality_disorder)
         as a categorization of the following text.
         Return this analysis in json format, here is an example: {
-            "result": "normal"
+            "result": "..."
         }
         Under no circumstances can you return anything other than this json response, including explanations.
         Here is the text data to analize: ${text}
     `
+
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const json_text = response.text().replace("```json", "").replace("```", "");
+
+    console.log(json_text);
     return JSON.parse(json_text)
 }
 
@@ -160,7 +157,7 @@ export async function rejudgeSentiment(text: string, question: string): JsonObje
 {
     const prompt = `
     Read the following text data and determine the sentiment of the text, given the previous question.
-    I need you to select ONE one of the following (normal, depressed, suicidal, anxiety, bipolar, stress, or personality disorder)
+    I need you to select ONE one of the following (normal, depressed, suicidal, anxiety, bipolar, stress, or personality_disorder)
     as a categorization of the following text.
     Return this analysis in json format, here is an example: {
         "result": "normal"
