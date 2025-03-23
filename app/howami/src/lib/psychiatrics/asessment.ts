@@ -53,7 +53,7 @@ async function getAIResponse(questions: Array<string>): JsonObject
 {
     const prompt = `convert the following list of statements 
     into a list of questions that can be asked 
-    to a person to assess their depression level, in a mannar that feels conversational, 
+    to a person to assess their depression level, in a manner that feels conversational, 
     and format your response into json that can be parsed using JSON.parse(response): ${questions}`;
 
     const result = await model.generateContent(prompt);
