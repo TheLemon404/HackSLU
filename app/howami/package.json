@@ -22,6 +22,9 @@
 	},
 	"dependencies": {
 		"@google/generative-ai": "^0.24.0",
-		"gsap": "^3.12.7"
+		"@tensorflow/tfjs": "^4.22.0",
+		"gsap": "^3.12.7",
+		"jpickle": "^0.4.1",
+		"pickle": "^0.2.0"
 	}
 }

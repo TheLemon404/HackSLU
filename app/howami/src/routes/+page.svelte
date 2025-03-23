@@ -128,12 +128,13 @@
             </ul>
         {/each}
         </div>
-        {#if responses.length == 0}
-            <input autocomplete="off" id="user_text" class="center_input" onkeypress={submit_text} placeholder="how are you feeling, is there anything on your mind?">
-        {/if}
-        {#if responses.length > 0}
-            <input autocomplete="off" id="user_text" class="lower_input" onkeypress={submit_text} placeholder="how are you feeling, is there anything on your mind?">
-        {/if}
+        <input 
+        autocomplete="off" 
+        id="user_text" 
+        class={responses.length ? 'lower_input' : 'center_input'} 
+        onkeypress={submit_text} 
+        placeholder="how are you feeling, is there anything on your mind?"
+    >
     </div>
 
     <div class="background">
@@ -141,127 +142,124 @@
 </div>
 
 <style>
-    input
-    {
-        height: 25px;
-        width: 100% ;
-        position: absolute;
-        max-width: 500px;
-        padding: 15px;
-        font-size: 18px;
-        border: 1px solid var(--light_grey);
-        border-radius: 50px;
-        transition: all 200ms;
+    .ai_header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
     }
 
-    input:focus {
-        outline: none;
-        border: 1px solid var(--primary_color);
+    .ai_header img {
+        width: 28px;
+        height: 28px;
+        filter: brightness(0) saturate(100%) invert(27%) sepia(95%) saturate(1834%) hue-rotate(215deg) brightness(97%) contrast(93%);
     }
 
-    .response_list
-    {
-        list-style: none;
-        padding: 5px;
-        margin: 5px;
+    .me_header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--darkish_light);
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
     }
 
-    .response_container
-    {
-        align-items: flex-end, stretch;
-        width: 75vw;
-        max-width: 700px;
-        height: 85vh;
-        overflow-x: hidden;
-    }
-
-    .response_container::-webkit-scrollbar
-    {
-        background-color: transparent;
-        width: 7px;
-    }
-
-    .response_container::-webkit-scrollbar-track
-    {
-        background-color: transparent;
-    }
-
-    .response_container::-webkit-scrollbar-thumb
-    {
-        background-color: var(--light_grey);
-        border-radius: 15px;
-    }
-
-    .center_input
-    {
-        top: calc(50% - 30px);
-    }
-
-    .lower_input
-    {
-        top: calc(90% - 30px);
+    .me_header svg {
+        width: 24px;
+        height: 24px;
+        color: var(--dark);
     }
 
     .conversation_container {
         display: flex;
-        justify-content: center;
-        margin-top: 0vh;
+        flex-direction: column;
+        height: 80vh;
         padding: 20px;
-        overflow: hidden;
     }
 
-    .line
-    {
+    .response_container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .response {
+        display: flex;
+        gap: 15px;
+        margin: 15px 0;
+    }
+
+    .response:has(.me_header) {
+        margin-left: auto;
+    }
+
+    .response_list {
+        padding: 0;
+        margin: 0;
+    }
+
+    .ai_response {
+        background: var(--very_light);
+        padding: 12px 20px;
+        border-radius: 12px;
+        color: var(--dark);
         border: 1px solid var(--light_grey);
+        max-width: 80%;
+        animation: appear 2s;
+    }
+
+    .response:has(.me_header) p {
+        background: var(--discord);
+        color: var(--very_light);
+        border-radius: 12px;
+        padding: 12px 20px;
+    }
+
+
+    input:focus {
+        outline: none;
+        border-color: var(--primary_color);
     }
 
     .background {
-        z-index: -1;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: calc(100vw - 30px);
-        height: calc(100vh - 30px);
-        background-color: var(--light);
-        border: none;
-        margin: 15px;
+        background: var(--light);
+    }
+
+    .response_container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .response_container::-webkit-scrollbar-thumb {
         border-radius: 15px;
+        background: var(--light_grey);
+    }
+    input {
+        position: fixed;
+        left: 50%;
+        width: 90%;
+        max-width: 600px;
+        padding: 12px 20px;
+        border: 1px solid var(--light_grey);
+        border-radius: 24px;
+        background: var(--very_light);
+        color: var(--dark);
+        transition: all 0.3s ease;
+        top: 50%;
+        transform: translate(-50%, -50%);
     }
 
-    .response
-    {
-        border-radius: 10px;
-        padding: 5px;
-        overflow: hidden;
-        color: var(--primary_color);
-        font-size: 20px;
-        line-height: 30px;
-        margin: 10px;
+    .center_input {
+        top: 50%;
+        transform: translate(-50%, -50%);
     }
 
-    .me_header
-    {
-        margin: 5px;
-        border-radius: 5px;
-        width: 50px;
-        color: var(--light_dark);
-    }
-
-    .ai_header
-    {
-        margin: 5px;
-        border-radius: 5px;
-        width: 50px;
-        color: var(--primary_color);
-    }
-
-    .ai_response
-    {
-        animation: 2s appear;
-    }
-
-    @keyframes appear {
-        from { color: transparent;}
-        to {color: var(--primary_color);}
+    .lower_input {
+        top: auto;
+        bottom: 20px;
+        transform: translateX(-50%);
     }
 </style>

@@ -39,6 +39,7 @@
                     )
                 }
             ).then((res) => res.json());
+            console.log(resources);
             });
         }  
     })
@@ -104,7 +105,7 @@
         <h3>Recommendations</h3>
         <div class="recommendation">
             {#each resources.hospitals as hospital}
-            <a href={hospital.website}>{hospital.name}</a>
+            <a class="link" href={hospital.website}>{hospital.name}</a>
             <p>{hospital.speciality}</p>
             {/each}
         </div>
@@ -232,6 +233,22 @@
         font-style: var(--font_style);
         color: var(--dark_grey);
         margin: 0;
-        padding: 0.5rem;
+    }
+
+    .recommendation
+    {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 5px;
+    }
+
+    .link
+    {
+        text-decoration: none;
+        border: 2px solid var(--darkish_light);
+        background-color: white;
+        padding: 5px;
+        margin: 5px;
+        border-radius: 25px;
     }
 </style>
