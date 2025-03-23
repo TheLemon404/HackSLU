@@ -11,6 +11,7 @@
     let responses: string[] = $state([]);
     let initial_sentiment: boolean = true;
     let question_index = 0;
+    let sentiment = {};
 
     let answers: Array<string> = [];
     let questions: Array<string> = [];
@@ -32,6 +33,8 @@
                 });
 
                 const form_data = {
+                    sentiment: sentiment,
+                    last_question: data.questions[question_index],
                     initial_sentiment: initial_sentiment,
                     user_text: user_text,
                     chosen_questions: data.questions,
@@ -58,6 +61,8 @@
                 });
 
                 initial_sentiment = result.initial_sentiment;
+
+                sentiment = result.sentiment;
 
                 questions.push(result.question_to_ask);
 
