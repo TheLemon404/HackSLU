@@ -16,9 +16,13 @@ export async function POST(event: RequestEvent): Promise<Response>
         question_chosen_pack = getQuestionListBasedOnSentiment(sentiment.result);
     }
 
-    if(data.sentiment == "normal")
+    if(data.sentiment.result == "normal")
     {
         sentiment = await rejudgeSentiment(data.user_text, data.last_question);
+        if(sentiment.result != "normal")
+        {
+            question_index = 0;
+        }
         question_chosen_pack = getQuestionListBasedOnSentiment(sentiment.result);
     }
 

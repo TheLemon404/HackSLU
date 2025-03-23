@@ -86,7 +86,6 @@ export async function getInitialSentiment(text: string): JsonObject
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const json_text = response.text().replace("```json", "").replace("```", "");
-    console.log(json_text)
     return JSON.parse(json_text)
 }
 
@@ -132,12 +131,9 @@ export async function formatQuestionAsResponse(question: string, user_text: stri
     Under no circumstances can you return anything other than this json response, including explanations.
     `
 
-    console.log(prompt)
-
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const json_text = response.text().replace("```json", "").replace("```", "")
-    console.log(json_text);
     return JSON.parse(json_text).response;
 }
 
@@ -145,20 +141,20 @@ export async function rejudgeSentiment(text: string, question: string): JsonObje
 {
     const prompt = `
     Read the following text data and determine the sentiment of the text, given the previous question.
-        I need you to select ONE one of the following (normal, depressed, suicidal, anxiety, bipolar, stress, or personality disorder)
-        as a categorization of the following text.
-        Return this analysis in json format, here is an example: {
-            "result": "normal"
-        }
-        Under no circumstances can you return anything other than this json response, including explanations.
-        Here is the text data to analize: ${text},
-        Here is the previous question: ${question}
-        `
+    I need you to select ONE one of the following (normal, depressed, suicidal, anxiety, bipolar, stress, or personality disorder)
+    as a categorization of the following text.
+    Return this analysis in json format, here is an example: {
+        "result": "normal"
+    }
+    Under no circumstances can you return anything other than this json response, including explanations.
+    Here is the text data to analize: ${text},
+    Here is the previous question: ${question}
+    `
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const json_text = response.text().replace("```json", "").replace("```", "");
-        return JSON.parse(json_text);
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const json_text = response.text().replace("```json", "").replace("```", "");
+    return JSON.parse(json_text);
 }
 
 export async function scorePatient(q_and_a: JsonObject): JsonObject
@@ -187,5 +183,34 @@ export async function scorePatient(q_and_a: JsonObject): JsonObject
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const json_text = response.text().replace("```json", "").replace("```", "");
+    return JSON.parse(json_text);
+}
+
+export async function getDoctorsNearMe(location: JsonObject, diagnosis: string): JsonObject
+{
+    const prompt = `
+    You are going to be provided a location, in latitude and longitude, and a psychiatric diagnosis.
+    Return a list of hospitals somewhat near the location that are specialized in the diagnosis.
+    Return your answer in the following json format:
+    {
+        "hospitals": [
+            {
+                "name": "",
+                "specialty": "",
+                "location": "",
+                "phone_number": "",
+                "website": ""
+            }
+        ]
+    }
+    Here is the location: {longitude: ${location.longitude}, latitude: ${location.latitude}}
+    Here is the diagnosis: ${diagnosis}
+    `
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const json_text = response.text().replace("```json", "").replace("```", "");
+    console.log(json_text);
+    
     return JSON.parse(json_text);
 }

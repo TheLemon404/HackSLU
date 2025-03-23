@@ -1,13 +1,47 @@
 <script lang='ts'>
-    import { getContext } from "svelte";
+    import { getContext, onMount } from "svelte";
     import "../../globals.css"  
 
-    const score = JSON.parse(window.localStorage.getItem("score"));
+    let latitude;
+    let longitude = null;
+    let error = null;
 
-    function capitalize(s)
-{
-    return s && String(s[0]).toUpperCase() + String(s).slice(1);
-}
+    const score = JSON.parse(window.localStorage.getItem("score"));
+    let resources: JsonObject = $state({});
+
+    function capitalize(s: string)
+    {
+        return s && String(s[0]).toUpperCase() + String(s).slice(1);
+    }
+
+    onMount(async () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (position: GeolocationPosition) => 
+            {
+                latitude = position.coords.latitude;
+                longitude = position.coords.longitude;
+
+                resources = await fetch("/api/doctors",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "accept":"application/json"
+                    },
+                    body: JSON.stringify(
+                        {
+                            location: {
+                                latitude: latitude,
+                                longitude: longitude
+                            },
+                            diagnosis: score.diagnosis
+                        }
+                    )
+                }
+            ).then((res) => res.json());
+            });
+        }  
+    })
 </script>
 
 <div class="container">
@@ -69,7 +103,10 @@
     <div class="section">
         <h3>Recommendations</h3>
         <div class="recommendation">
-            <p>-</p>
+            {#each resources.hospitals as hospital}
+            <a href={hospital.website}>{hospital.name}</a>
+            <p>{hospital.speciality}</p>
+            {/each}
         </div>
     </div>
 </div>
