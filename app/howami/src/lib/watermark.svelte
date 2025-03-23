@@ -33,19 +33,43 @@
     a
     {
         height: 36px;
-        border: 2px solid var(--light);
         border-radius: 5px;
         transition: all 200ms;
     }
 
     a:hover
     {
-        border: 2px solid var(--discord);
+        animation: rotate_to 1s;
+    }
+
+    a
+    {
+        animation: rotate_from 1s;
     }
 
     h3
     {
         margin: 15px;
-        margin-top: 7px;
+        margin-top: 5px;
+    }
+
+    @keyframes rotate_to
+    {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(90deg);
+        }
+    }
+
+    @keyframes rotate_from
+    {
+        0% {
+            transform: rotate(90deg);
+        }
+        100% {
+            transform: rotate(0deg);
+        }
     }
 </style>

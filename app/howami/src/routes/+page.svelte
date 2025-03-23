@@ -131,7 +131,7 @@
         {/each}
         </div>
         {#if responses.length == 0}
-            <h1>How are you feeling today?</h1>
+            <h1>How's life been lately?</h1>
         {/if}
         <input 
         autocomplete="off" 
@@ -171,6 +171,7 @@
         width: 28px;
         height: 28px;
         filter: brightness(0) saturate(100%) invert(27%) sepia(95%) saturate(1834%) hue-rotate(215deg) brightness(97%) contrast(93%);
+        animation: rotate 1s;
     }
 
     .me_header {
@@ -267,7 +268,7 @@
         border: 2px solid var(--light_grey);
         border-radius: 35px;
         background: var(--very_light);
-        color: var(--discord);
+        color: var(--light_dark);
         transition: all 0.3s ease;
         top: 50%;
         transform: translate(-50%, -50%);
@@ -292,6 +293,16 @@
         100% {
             opacity: 1;
             transform: translateY(0);
+        }
+    }
+
+    @keyframes rotate
+    {
+        0% {
+            transform: rotate(90deg);
+        }
+        100% {
+            transform: rotate(0deg);
         }
     }
 </style>
