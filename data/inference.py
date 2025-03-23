@@ -40,9 +40,9 @@ def predict_text(text):
     then predicts on a single text block.
     """
     # load artifacts
-    vectorizer_path = r"C:\Users\brand\Documents\HackSLU\data\tfidf_vectorizer.pkl"
-    xgb_model_path = r"C:\Users\brand\Documents\HackSLU\data\xgb_model.pkl"
-    label_encoder_path = r"C:\Users\brand\Documents\HackSLU\data\label_encoder.pkl"
+    vectorizer_path = r"C:\C:\Users\isakh\Documents\HackSLU\data\tfidf_vectorizer.pkl"
+    xgb_model_path = r"C:\Users\isakh\Documents\HackSLU\data\xgb_model.pkl"
+    label_encoder_path = r"C:\Users\isakh\Documents\HackSLU\data\label_encoder.pkl"
 
     vectorizer = joblib.load(vectorizer_path)
     xgb_model = joblib.load(xgb_model_path)
