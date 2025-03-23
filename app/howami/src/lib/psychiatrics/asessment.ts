@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { GOOGLE_GEMENI_API_KEY } from "$env/static/private";
+import { MODEL_SERVER_URL } from "$env/static/private";
 
 const genAI = new GoogleGenerativeAI(GOOGLE_GEMENI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -89,7 +90,7 @@ export async function getAnxietyQuestions(): JsonObject
 
 export async function getInHouseSentiment(text: string): JsonObject
 {
-    const res = await fetch("http://localhost:8000/", 
+    const res = await fetch(MODEL_SERVER_URL, 
     {
         method: "POST",
         headers: {
@@ -170,7 +171,7 @@ export async function formatQuestionAsResponse(question: string, user_text: stri
 
 export async function inHouseRejudgeSentiment(text: string, question: string): JsonObject
 {
-    const res = await fetch("http://localhost:8000/", 
+    const res = await fetch(MODEL_SERVER_URL, 
     {
         method: "POST",
         headers: {
