@@ -87,6 +87,23 @@ export async function getAnxietyQuestions(): JsonObject
     return await getAIResponse(GAD_7);
 }
 
+export async function getInHouseSentiment(text: string): JsonObject
+{
+    const res = await fetch("http://localhost:8000/", 
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "accept":"application/json"
+        },
+        body: JSON.stringify({
+            "user_text":text
+        })
+    }).then((res) => res.json());
+
+	return res;
+}
+
 export async function getInitialSentiment(text: string): JsonObject
 {
     const prompt = `
@@ -132,9 +149,7 @@ export function getQuestionListBasedOnSentiment(sentiment: string): List<string>
 }
 
 export async function formatQuestionAsResponse(question: string, user_text: string): JsonObject
-{
-    console.log(question);
-    
+{    
     const prompt = `
     Alter the following question slightly, to make it fit into a conversation with the previous text. 
     Make sure the question is still asked, semi-directly
@@ -151,6 +166,23 @@ export async function formatQuestionAsResponse(question: string, user_text: stri
     const response = await result.response;
     const json_text = response.text().replace("```json", "").replace("```", "")
     return JSON.parse(json_text).response;
+}
+
+export async function inHouseRejudgeSentiment(text: string, question: string): JsonObject
+{
+    const res = await fetch("http://localhost:8000/", 
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "accept":"application/json"
+        },
+        body: JSON.stringify({
+            "user_text":text
+        })
+    }).then((res) => res.json());
+
+    return res;
 }
 
 export async function rejudgeSentiment(text: string, question: string): JsonObject
@@ -180,7 +212,7 @@ export async function scorePatient(q_and_a: JsonObject): JsonObject
     Read these questions and answers, and rate the patients 
     depression, suicidal, anxiety, bipolar, stress, and personality disorder levels.
     Also add an antry for a possible diagnosis, that is either depression, suicidal, anxiety, bipolar, stress, or personality disorder.
-    Also add a short explanation for each diagnosis.
+    Also add a short explanation for each diagnosis. Also rank the immediate medical help from 0 to 100, given this context.
     Rate them in a percentage, from 0 - 100, and return your answer in the following json format:
     {
         "depression": 0,
@@ -190,7 +222,8 @@ export async function scorePatient(q_and_a: JsonObject): JsonObject
         "stress": 0,
         "personality_disorder": 0,
         "diagnosis": "",
-        "explanation": ""
+        "explanation": "",
+        "need_for_help: 0
     }
     Under no circumstances can you return anything other than this json response, including explanations.
     Here is the list of questions and answers: ${JSON.stringify(q_and_a)}
@@ -207,6 +240,7 @@ export async function getDoctorsNearMe(location: JsonObject, diagnosis: string):
     const prompt = `
     You are going to be provided a location, in latitude and longitude, and a psychiatric diagnosis.
     Return a list of hospitals somewhat near the location that are specialized in the diagnosis.
+    Also provide a list of other mental health links, and resources;
     Return your answer in the following json format:
     {
         "hospitals": [
@@ -216,6 +250,12 @@ export async function getDoctorsNearMe(location: JsonObject, diagnosis: string):
                 "location": "",
                 "phone_number": "",
                 "website": ""
+            }
+        ],
+        "resources": [
+            {
+                "title":"",
+                "link":""
             }
         ]
     }

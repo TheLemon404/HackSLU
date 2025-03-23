@@ -54,6 +54,7 @@
                 <span class="label">Possible Diagnosis</span>
                 <span class="value">{capitalize(score.diagnosis)}</span>
                 <span class="value_minor">Explanation: {score.explanation}</span>
+                <span class="value">Need for medical attention: {score.need_for_help}%</span>
             </div>
         </div>
     </div>
@@ -108,7 +109,9 @@
             {/if}
             {#each resources.hospitals as hospital}
                 <a class="link" href={hospital.website}>{hospital.name}</a>
-                <p>{hospital.speciality}</p>
+            {/each}
+            {#each resources.resources as resource}
+                <a class="link" href={resource.link}>{resource.title}</a>
             {/each}
         </div>
     </div>
@@ -119,6 +122,11 @@
 </div>
 
 <style>
+    :root
+    {
+        overflow: hidden;
+    }
+    
     .container {
         font-family: var(--font);
         font-weight: var(--font_weight);
@@ -129,6 +137,7 @@
         background: var(--light);
         border-radius: 12px;
         display: flex;
+        overflow: hidden;
     }
 
     .background {
@@ -272,9 +281,10 @@
         color: var(--discord);
         text-decoration: none;
         background-color: var(--very_light);
+        border-left: 3px solid var(--discord);
         padding: 5px 10px;
         margin: 5px;
-        border-radius: 25px;
+        border-radius: 5px;
         transition: all 200ms;
     }
 

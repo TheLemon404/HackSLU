@@ -1,5 +1,5 @@
 import type { RequestEvent } from "@sveltejs/kit";
-import { formatQuestionAsResponse, getDepressionQuestions, getInitialSentiment, getQuestionListBasedOnSentiment, rejudgeSentiment } from "$lib/psychiatrics/asessment";
+import { formatQuestionAsResponse, getDepressionQuestions, getInHouseSentiment, getInitialSentiment, getQuestionListBasedOnSentiment, inHouseRejudgeSentiment, rejudgeSentiment } from "$lib/psychiatrics/asessment";
 
 export async function POST(event: RequestEvent): Promise<Response>
 {
@@ -12,13 +12,14 @@ export async function POST(event: RequestEvent): Promise<Response>
 
     if(data.initial_sentiment)
     {
-        sentiment = await getInitialSentiment(data.user_text)
+        sentiment = await getInitialSentiment(data.user_text);
         question_chosen_pack = getQuestionListBasedOnSentiment(sentiment.result);
     }
 
     if(data.sentiment.result == "normal")
     {
         sentiment = await rejudgeSentiment(data.user_text, data.last_question);
+        console.log(sentiment);
         if(sentiment.result != "normal")
         {
             question_index = 0;
