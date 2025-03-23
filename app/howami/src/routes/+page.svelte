@@ -128,12 +128,13 @@
             </ul>
         {/each}
         </div>
-        {#if responses.length == 0}
-            <input autocomplete="off" id="user_text" class="center_input" onkeypress={submit_text} placeholder="how are you feeling, is there anything on your mind?">
-        {/if}
-        {#if responses.length > 0}
-            <input autocomplete="off" id="user_text" class="lower_input" onkeypress={submit_text} placeholder="how are you feeling, is there anything on your mind?">
-        {/if}
+        <input 
+        autocomplete="off" 
+        id="user_text" 
+        class={responses.length ? 'lower_input' : 'center_input'} 
+        onkeypress={submit_text} 
+        placeholder="how are you feeling, is there anything on your mind?"
+    >
     </div>
 
     <div class="background">
@@ -218,19 +219,6 @@
         padding: 12px 20px;
     }
 
-    input {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 600px;
-        padding: 12px 20px;
-        border: 1px solid var(--light_grey);
-        border-radius: 24px;
-        background: var(--very_light);
-        color: var(--dark);
-    }
 
     input:focus {
         outline: none;
@@ -249,13 +237,29 @@
         border-radius: 15px;
         background: var(--light_grey);
     }
+    input {
+        position: fixed;
+        left: 50%;
+        width: 90%;
+        max-width: 600px;
+        padding: 12px 20px;
+        border: 1px solid var(--light_grey);
+        border-radius: 24px;
+        background: var(--very_light);
+        color: var(--dark);
+        transition: all 0.3s ease;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
 
-    @keyframes appear {
-        0% {
-            opacity: 0;
-        }
-        100% {
-            opacity: 1;
-        }
+    .center_input {
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .lower_input {
+        top: auto;
+        bottom: 20px;
+        transform: translateX(-50%);
     }
 </style>
