@@ -1,5 +1,13 @@
 <script lang='ts'>
+    import { getContext } from "svelte";
     import "../../globals.css"  
+
+    const score = JSON.parse(window.localStorage.getItem("score"));
+
+    function capitalize(s)
+{
+    return s && String(s[0]).toUpperCase() + String(s).slice(1);
+}
 </script>
 
 <div class="container">
@@ -9,16 +17,51 @@
         <h3>Overview</h3>
         <div class="stats">
             <div class="stat">
-                <span class="label">Completed</span>
-                <span class="value">-</span>
+                <span class="label">Possible Diagnosis</span>
+                <span class="value">{capitalize(score.diagnosis)}</span>
+                <span class="value_minor">Explanation: {score.explanation}</span>
             </div>
-            <div class="stat">
-                <span class="label">Overall Score</span>
-                <span class="value">-</span>
-            </div> 
-            <div class="stat">
-                <span class="label">Responses Analyzed</span>
-                <span class="value">-</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Risk Analysis</h3>
+        <div class="metrics">
+            <div class="metric">
+                <span>Anxiety Level</span>
+                <div class="bar">
+                    <div class="bar-inner" style="border-radius: 15px; width: {score.anxiety}%; height: 100%; background-color: color-mix(in srgb, var(--good) {100-score.anxiety}%, var(--bad) {score.anxiety}%);"></div>
+                </div>
+            </div>
+            <div class="metric">
+                <span>Bipolar Level</span>
+                <div class="bar">
+                    <div class="bar-inner" style="border-radius: 15px; width: {score.bipolar}%; height: 100%; background-color: color-mix(in srgb, var(--good) {100-score.bipolar}%, var(--bad) {score.bipolar}%);"></div>
+                </div>
+            </div>
+            <div class="metric">
+                <span>Depression Risk</span>
+                <div class="bar">
+                    <div class="bar-inner" style="border-radius: 15px; width: {score.depression}%; height: 100%; background-color: color-mix(in srgb, var(--good) {100-score.depression}%, var(--bad) {score.depression}%);"></div>
+                </div>
+            </div>
+            <div class="metric">
+                <span>Personality Disorder Risk</span>
+                <div class="bar">
+                    <div class="bar-inner" style="border-radius: 15px; width: {score.personality_disorder}%; height: 100%; background-color: color-mix(in srgb, var(--good) {100-score.personality_disorder}%, var(--bad) {score.personality_disorder}%);"></div>
+                </div>
+            </div>
+            <div class="metric">
+                <span>Stress Risk</span>
+                <div class="bar">
+                    <div class="bar-inner" style="border-radius: 15px; width: {score.stress}%; height: 100%; background-color: color-mix(in srgb, var(--good) {100-score.stress}%, var(--bad) {score.stress}%);"></div>
+                </div>
+            </div>
+            <div class="metric">
+                <span>Suicidal Risk</span>
+                <div class="bar">
+                    <div class="bar-inner" style="border-radius: 15px; width: {score.suicidal}%; height: 100%; background-color: color-mix(in srgb, var(--good) {100-score.suicidal}%, var(--bad) {score.suicidal}%);"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -27,24 +70,6 @@
         <h3>Recommendations</h3>
         <div class="recommendation">
             <p>-</p>
-        </div>
-    </div>
-
-    <div class="section">
-        <h3>Risk Analysis</h3>
-        <div class="metrics">
-            <div class="metric">
-                <span>Stress Level</span>
-                <div class="bar"></div>
-            </div>
-            <div class="metric">
-                <span>Anxiety Level</span>
-                <div class="bar"></div>
-            </div>
-            <div class="metric">
-                <span>Depression Risk</span>
-                <div class="bar"></div>
-            </div>
         </div>
     </div>
 </div>
@@ -130,6 +155,18 @@
         color: var(--dark_grey);
         font-size: 1.1rem;
         font-weight: 600;
+        margin-top: 0.25rem;
+    }
+
+    .value_minor
+    {
+        font-family: var(--font);
+        font-weight: var(--font_weight);
+        font-style: var(--font_style);
+        display: block;
+        color: var(--dark_grey);
+        font-size: 1.1rem;
+        font-weight: 400;
         margin-top: 0.25rem;
     }
 

@@ -1,9 +1,14 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { GOOGLE_GEMENI_API_KEY } from "$env/static/private";
-import type { JsonOptions } from "vite";
 
 const genAI = new GoogleGenerativeAI(GOOGLE_GEMENI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+const Q: Array<string> = [
+    "Anything bothering you in particular",
+    "You are overall healthy",
+    "You are overall happy",
+]
 
 const PHQ_9: Array<string> = [
     "Little interest or pleasure in doing things",
@@ -85,7 +90,7 @@ export async function getInitialSentiment(text: string): JsonObject
     return JSON.parse(json_text)
 }
 
-export function getQuestionListBasedOnSentiment(sentiment: string): List<string>
+export function getQuestionListBasedOnSentiment(sentiment: string): Array<string>
 {
     switch(sentiment)
     {
@@ -95,14 +100,25 @@ export function getQuestionListBasedOnSentiment(sentiment: string): List<string>
             return PHQ_9;
         case "anxiety":
             return GAD_7;
+        case "suicidal":
+            return ASQ;
+        case "bipolar":
+            return RMS;
+        case "stress":
+            return GAD_7;
+        case "personality disorder":
+            return RMS;
         default:
-            return ["do you love dogs?"] 
+            return ["You seem fine in all honesty, is there anything else you want to talk about?"] 
     }
 }
 
 export async function formatQuestionAsResponse(question: string, user_text: string): JsonObject
 {
-    console.log(question);
+    if(question == undefined)
+    {
+        return undefined;
+    }
     
     const prompt = `
     Alter the following question slightly, to make it fit into a conversation with the previous text. 
@@ -125,4 +141,31 @@ export async function formatQuestionAsResponse(question: string, user_text: stri
     return JSON.parse(json_text).response;
 }
 
-export async function scorePatient()
+export async function scorePatient(q_and_a: JsonObject): JsonObject
+{
+    const prompt = `
+    You are going to be provided a list of questions and answers in json format.
+    Read these questions and answers, and rate the patients 
+    depression, suicidal, anxiety, bipolar, stress, and personality disorder levels.
+    Also add an antry for a possible diagnosis, that is either depression, suicidal, anxiety, bipolar, stress, or personality disorder.
+    Also add a short explanation for each diagnosis.
+    Rate them in a percentage, from 0 - 100, and return your answer in the following json format:
+    {
+        "depression": 0,
+        "suicidal": 0,
+        "anxiety": 0,
+        "bipolar": 0,
+        "stress": 0,
+        "personality_disorder": 0,
+        "diagnosis": "",
+        "explanation": ""
+    }
+    Under no circumstances can you return anything other than this json response, including explanations.
+    Here is the list of questions and answers: ${JSON.stringify(q_and_a)}
+    `
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const json_text = response.text().replace("```json", "").replace("```", "");
+    return JSON.parse(json_text);
+}

@@ -11,6 +11,8 @@
     --dark: #1e1e1e;
     --lightish_dark: #3a3a3a;
     --light_dark: #424242;
+    --good: #27ff81;
+    --bad: hsl(350, 100%, 54%);
 
     --font: "Gidole", sans-serif;
     --font_weight: 500;
