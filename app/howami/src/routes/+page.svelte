@@ -4,13 +4,17 @@
     import { base } from "$app/paths"
     import gsap from "gsap";
     import { goto } from "$app/navigation";
+    import { setContext } from "svelte";
 
     let { data }: { data: PageData } = $props();
 
     let responses: string[] = $state([]);
     let initial_sentiment: boolean = true;
     let question_index = 0;
+    let sentiment = {};
 
+    let answers: Array<string> = [];
+    let questions: Array<string> = [];
 
     async function submit_text(e: KeyboardEvent)
     {
@@ -19,6 +23,7 @@
             const user_input_field = document.getElementById("user_text");
             const scroll_panel = document.getElementById("response_container");
             let user_text: string = user_input_field.value;
+            user_input_field.value = "";
 
             if(user_text != "")
             {
@@ -28,6 +33,8 @@
                 });
 
                 const form_data = {
+                    sentiment: sentiment,
+                    last_question: data.questions[question_index],
                     initial_sentiment: initial_sentiment,
                     user_text: user_text,
                     chosen_questions: data.questions,
@@ -48,7 +55,6 @@
                 question_index = result.chosen_question_index
                 data.questions = result.chosen_questions;
                 
-                user_input_field.value = "";
                 responses.push({
                     id: 1,
                     text: result.question_to_ask
@@ -56,12 +62,40 @@
 
                 initial_sentiment = result.initial_sentiment;
 
+                sentiment = result.sentiment;
+
+                questions.push(result.question_to_ask);
+
+                answers.push(user_text);
+
                 if(result.ready_for_results)
                 {
+                    answers.splice(0,1);
+
+                    let q_and_a: Array<JsonObject> = [];
+                    for(let i = 0; i < answers.length; i++)
+                    {
+                        q_and_a.push({
+                            question: questions[i],
+                            answer: answers[i]
+                        });
+                    }
+
+                    const score = await fetch("/api/score",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "accept":"application/json"
+                            },
+                            body: JSON.stringify(q_and_a)
+                        }
+                    ).then((res) => res.json());
+
+                    window.localStorage.setItem("score", JSON.stringify(score));
                     goto('/result');
                 }
 
-                console.log(result);
 
                 gsap.to(scroll_panel, {
                     duration: 1,
@@ -79,13 +113,13 @@
         {#each responses as response}
             <ul class="response_list">
                 <li class="response">
-                    {#if response.id}
+                    {#if response.id == -1}
                     <h2 class="me_header"></h2>
                     <div class="line"></div>
                     <p style="color: var(--dark);">{response.text}</p>
                     {:else}
                     <h2 class="ai_header">
-                        <img src="{base}/logo.svg" style="color: var(--primary_color);">
+                        <img src="{base}/logo_primary.svg" style="fill: var(--primary_color); width: 35px; height: 35px;">
                     </h2>
                     <div class="line"></div>
                     <p class="ai_response">{response.text}</p>
@@ -95,10 +129,10 @@
         {/each}
         </div>
         {#if responses.length == 0}
-            <input id="user_text" class="center_input" onkeypress={submit_text} placeholder="how are you feeling, is there anything on your mind?">
+            <input autocomplete="off" id="user_text" class="center_input" onkeypress={submit_text} placeholder="how are you feeling, is there anything on your mind?">
         {/if}
         {#if responses.length > 0}
-            <input id="user_text" class="lower_input" onkeypress={submit_text} placeholder="how are you feeling, is there anything on your mind?">
+            <input autocomplete="off" id="user_text" class="lower_input" onkeypress={submit_text} placeholder="how are you feeling, is there anything on your mind?">
         {/if}
     </div>
 

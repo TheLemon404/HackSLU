@@ -1,21 +1,10 @@
 import type { RequestEvent } from "@sveltejs/kit";
-import { formatQuestionAsResponse, getDepressionQuestions, getInitialSentiment, getQuestionListBasedOnSentiment } from "$lib/psychiatrics/asessment";
-
-function getRandomArrayElement(array: Array<any>): any
-{
-    if (!array || array.length === 0)
-    {
-        return undefined;
-    }
-
-    const random_index = Math.floor(Math.random() * array.length);
-    return array[random_index]
-}
+import { formatQuestionAsResponse, getDepressionQuestions, getInitialSentiment, getQuestionListBasedOnSentiment, rejudgeSentiment } from "$lib/psychiatrics/asessment";
 
 export async function POST(event: RequestEvent): Promise<Response>
 {
     const data = await event.request.json();
-    let sentiment = {};
+    let sentiment = data.sentiment;
     let question_chosen = "";
     let question_chosen_pack: Array<string> = data.chosen_questions
     let question_index = data.question_index;
@@ -26,7 +15,17 @@ export async function POST(event: RequestEvent): Promise<Response>
         sentiment = await getInitialSentiment(data.user_text)
         question_chosen_pack = getQuestionListBasedOnSentiment(sentiment.result);
     }
-    
+
+    if(data.sentiment.result == "normal")
+    {
+        sentiment = await rejudgeSentiment(data.user_text, data.last_question);
+        if(sentiment.result != "normal")
+        {
+            question_index = 0;
+        }
+        question_chosen_pack = getQuestionListBasedOnSentiment(sentiment.result);
+    }
+
     if(question_chosen_pack.length == 0)
     {
         ready_for_results = true;
@@ -41,6 +40,11 @@ export async function POST(event: RequestEvent): Promise<Response>
     question_index++;
     
     const question_to_ask = await formatQuestionAsResponse(question_chosen, data.user_text);
+
+    if(question_to_ask == undefined)
+    {
+        ready_for_results = true;
+    }
 
     const response = {
         question_to_ask: question_to_ask,
