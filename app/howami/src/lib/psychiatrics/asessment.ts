@@ -121,6 +121,14 @@ export function getQuestionListBasedOnSentiment(sentiment: string): List<string>
             return PHQ_9;
         case "anxiety":
             return GAD_7;
+        case "suicidal":
+            return ASQ;
+        case "bipolar":
+            return RMS;
+        case "stress":
+            return GAD_7;
+        case "personality_disorder":
+            return McLean;
         default:
             return ["You seem fine in all honesty, is there anything else you want to talk about?"] 
     }

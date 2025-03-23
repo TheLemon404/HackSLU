@@ -1,6 +1,7 @@
 <script lang='ts'>
     import { getContext, onMount } from "svelte";
     import "../../globals.css"  
+    import Watermark from "$lib/watermark.svelte";
 
     let latitude;
     let longitude = null;
@@ -100,8 +101,11 @@
     </div>
 
     <div class="section">
-        <h3>Nearby Fascilities</h3>
+        <h3>Nearby Resources</h3>
         <div class="recommendation">
+            {#if resources.hospitals == undefined}
+                <div class="lds-ripple"><div></div></div>
+            {/if}
             {#each resources.hospitals as hospital}
                 <a class="link" href={hospital.website}>{hospital.name}</a>
                 <p>{hospital.speciality}</p>
@@ -110,6 +114,8 @@
     </div>
 
     <div class="background"></div>
+
+    <Watermark />
 </div>
 
 <style>
@@ -280,10 +286,12 @@
         position: relative;
         width: 80px;
         height: 80px;
+        margin: auto;
+        margin-top: 70px;
     }
     .lds-ripple div {
         position: absolute;
-        border: 4px solid currentColor;
+        border: 4px solid var(--discord);
         opacity: 1;
         border-radius: 50%;
         animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
