@@ -14,7 +14,7 @@ help midigate this backlog by determining the severity of the patients condition
 and to provide resources on where to seek help, should they need it.
 
 > [!IMPORTANT]
-》Context
+> Context
 
 For most of our team, this was their first hackathon and first real experience programming outside of class.
 Because of this, we descided to keep our scope small. We descided to create a custom sentiment analysis model
