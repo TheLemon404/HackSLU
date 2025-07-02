@@ -28,4 +28,9 @@ near the patient.
 > Improvements
 
 Currently we rely on gemeni for the final assessment and scoring, simply due to the 24 hour time constraint and limited
-team experience. Ideally this would use a custom model, hosted with our existing models api.
+team experience. Ideally this would use a custom model, hosted with our existing models API.
+
+# Showcase
+![Screenshot 2025-07-02 113012](https://github.com/user-attachments/assets/e31d8bee-cb54-436d-97c4-d99f0a10b710)
+![Screenshot 2025-07-02 113602](https://github.com/user-attachments/assets/69d49f12-8e01-45bc-9061-b0dac9b115f4)
+![Screenshot 2025-07-02 113633](https://github.com/user-attachments/assets/e5dce214-5119-4f8c-8b4a-8f67b8d83101)
